@@ -20,7 +20,7 @@ inline ofVec3f toOf(const Alembic::AbcGeom::V3f& v)
 	return ofVec3f(v.x, v.y, v.z);
 }
 
-inline Alembic::AbcGeom::V3f toAbc(const ofVec3f& v)
+inline Alembic::AbcGeom::V3f toAbc(const glm::vec3& v)
 {
 	return Alembic::AbcGeom::V3f(v.x, v.y, v.z);
 }
@@ -30,7 +30,7 @@ inline ofVec2f toOf(const Alembic::AbcGeom::V2f& v)
 	return ofVec2f(v.x, v.y);
 }
 
-inline Alembic::AbcGeom::V2f toAbc(const ofVec2f& v)
+inline Alembic::AbcGeom::V2f toAbc(const glm::vec2& v)
 {
 	return Alembic::AbcGeom::V2f(v.x, v.y);
 }

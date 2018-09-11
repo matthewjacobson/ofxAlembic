@@ -93,7 +93,9 @@ void Writer::addCamera(const string& path, const Camera& camera)
 
 void Writer::addCamera(const string& path, const ofCamera& ofcamera)
 {
-	addXform(path, ofcamera.getGlobalTransformMatrix());
+    ofMatrix4x4 m = ofcamera.getGlobalTransformMatrix();
+    
+	addXform(path, m);
 	
 	Camera camera(ofcamera);
 	camera.updateSample(ofcamera);

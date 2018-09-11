@@ -190,7 +190,7 @@ void PolyMesh::get(OPolyMeshSchema &schema) const
 		}
 
 		{
-			const vector<ofVec3f>& verts = mesh.getVertices();
+            const vector<glm::vec3>& verts = mesh.getVertices();
 			positions.resize(num_samples);
 
 			for (int i = 0; i < num_samples; i++)
@@ -199,7 +199,7 @@ void PolyMesh::get(OPolyMeshSchema &schema) const
 
 		if (mesh.getNumTexCoords() == mesh.getNumVertices())
 		{
-			const vector<ofVec2f> &v = mesh.getTexCoords();
+			const vector<glm::vec2> &v = mesh.getTexCoords();
 
 			uvs.resize(num_samples);
 			for (int i = 0; i < num_samples; i++)
@@ -209,11 +209,11 @@ void PolyMesh::get(OPolyMeshSchema &schema) const
 
 		if (mesh.getNumNormals() == mesh.getNumVertices())
 		{
-			const vector<ofVec3f> &v = mesh.getNormals();
+			const vector<glm::vec3> &v = mesh.getNormals();
 
 			norms.resize(num_samples);
 			for (int i = 0; i < num_samples; i++)
-				norms[i] = toAbc(v[idx[i]].getNormalized() * -1);
+                norms[i] = toAbc(glm::normalize(v[idx[i]]) * -1);
 		}
 		assert(norms.size() == 0 || norms.size() == num_samples);
 	}
@@ -228,7 +228,7 @@ void PolyMesh::get(OPolyMeshSchema &schema) const
 		}
 
 		{
-			const vector<ofVec3f>& verts = mesh.getVertices();
+			const vector<glm::vec3>& verts = mesh.getVertices();
 			positions.resize(num_samples);
 
 			for (int i = 0; i < num_samples; i++)
@@ -237,7 +237,7 @@ void PolyMesh::get(OPolyMeshSchema &schema) const
 
 		if (mesh.getNumTexCoords() == num_samples)
 		{
-			const vector<ofVec2f> &v = mesh.getTexCoords();
+			const vector<glm::vec2> &v = mesh.getTexCoords();
 
 			uvs.resize(num_samples);
 			for (int i = 0; i < num_samples; i++)
@@ -247,11 +247,11 @@ void PolyMesh::get(OPolyMeshSchema &schema) const
 
 		if (mesh.getNumNormals() == num_samples)
 		{
-			const vector<ofVec3f> &v = mesh.getNormals();
+			const vector<glm::vec3> &v = mesh.getNormals();
 
 			norms.resize(num_samples);
 			for (int i = 0; i < num_samples; i++)
-				norms[i] = toAbc(v[i].getNormalized() * -1);
+                norms[i] = toAbc(glm::normalize(v[i]) * -1);
 		}
 		assert(norms.size() == 0 || norms.size() == num_samples);
 	}
@@ -356,10 +356,10 @@ void PolyMesh::set(IPolyMeshSchema &schema, float time)
 	{
 		const V3f* points = m_meshP->get();
 		const int32_t* indices = m_meshIndices->get();
-		vector<ofVec3f>& dst = mesh.getVertices();
+		vector<glm::vec3>& dst = mesh.getVertices();
 		dst.resize(m_triangles.size() * 3);
 		
-		ofVec3f* dst_ptr = dst.data();
+        glm::vec3* dst_ptr = dst.data();
         
 		for (int i = 0; i < m_triangles.size(); i++)
 		{
@@ -388,10 +388,10 @@ void PolyMesh::set(IPolyMeshSchema &schema, float time)
 			{
 				N3fArraySamplePtr norm_ptr = N.getExpandedValue(ss).getVals();
 				const N3f* src = norm_ptr->get();
-				vector<ofVec3f>& dst = mesh.getNormals();
+				vector<glm::vec3>& dst = mesh.getNormals();
 				dst.resize(m_triangles.size() * 3);
 				
-				ofVec3f* dst_ptr = dst.data();
+                glm::vec3* dst_ptr = dst.data();
 
 				for (int i = 0; i < m_triangles.size(); i++)
 				{
@@ -420,10 +420,10 @@ void PolyMesh::set(IPolyMeshSchema &schema, float time)
                 V2fArraySamplePtr uv_ptr = value.getVals();
                 const V2f* src = uv_ptr->get();
                 auto indices = value.getIndices()->get();
-                vector<ofVec2f>& dst = mesh.getTexCoords();
+                vector<glm::vec2>& dst = mesh.getTexCoords();
                 dst.resize(m_triangles.size() * 3);
                 
-                ofVec2f* dst_ptr = dst.data();
+                glm::vec2* dst_ptr = dst.data();
                 
                 for (int i = 0; i < m_triangles.size(); i++)
                 {
@@ -443,10 +443,10 @@ void PolyMesh::set(IPolyMeshSchema &schema, float time)
 			{
 				V2fArraySamplePtr uv_ptr = UV.getExpandedValue(ss).getVals();
 				const V2f* src = uv_ptr->get();
-				vector<ofVec2f>& dst = mesh.getTexCoords();
+				vector<glm::vec2>& dst = mesh.getTexCoords();
 				dst.resize(m_triangles.size() * 3);
 				
-				ofVec2f* dst_ptr = dst.data();
+                glm::vec2* dst_ptr = dst.data();
 
 				for (int i = 0; i < m_triangles.size(); i++)
 				{
@@ -595,7 +595,12 @@ void Camera::updateParams(ofCamera &camera, ofMatrix4x4 xform)
 	float fovH = sample.getFieldOfView();
 	float fovV = ofRadToDeg(2 * atanf(tanf(ofDegToRad(fovH) / 2) * (h / w)));
 	camera.setFov(fovV);
-	camera.setTransformMatrix(xform);
+    
+    
+    camera.setPosition(xform.getTranslation());
+    camera.setScale(xform.getScale());
+    camera.rotate(xform.getRotate());
+//    camera.setTransformMatrix(xform);
 	
 	// TODO: lens offset
 }
